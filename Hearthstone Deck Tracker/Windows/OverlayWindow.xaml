@@ -516,6 +516,13 @@
                     DataContext="{Binding BattlegroundsInspirationViewModel, RelativeSource={RelativeSource AncestorType=windows:OverlayWindow}}"
                     />
 
+                <Canvas x:Name="IntelOverlayMount"
+                        Canvas.Left="0"
+                        Canvas.Top="0"
+                        Width="{Binding ActualWidth, ElementName=CanvasInfo}"
+                        Height="{Binding ActualHeight, ElementName=CanvasInfo}"
+                        Panel.ZIndex="480"/>
+
                 <!-- The tooltip needs to stay the bottom item to ensure they are always rendered on top -->
                 <Grid Name="OverlayTooltip" IsHitTestVisible="False"/>
             </Canvas>

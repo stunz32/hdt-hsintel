@@ -14,7 +14,7 @@
     <AssemblyVersion>1.47.11</AssemblyVersion>
     <FileVersion>1.47.11</FileVersion>
     <UseWPF>true</UseWPF>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <Platforms>x86</Platforms>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
@@ -329,4 +329,9 @@
     <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/ucrtbase.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
     <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/vcruntime140.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\HSIntel.Core\HSIntel.Core.csproj" />
+    <ProjectReference Include="..\HSIntel.Engine\HSIntel.Engine.csproj" />
+    <ProjectReference Include="..\HSIntel.Overlay\HSIntel.Overlay.csproj" />
+  </ItemGroup>
 </Project>

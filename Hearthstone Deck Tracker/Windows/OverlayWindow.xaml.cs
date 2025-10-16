@@ -406,6 +406,8 @@ namespace Hearthstone_Deck_Tracker.Windows
 			_winEventCallback = OnHearthstoneWindowLocationChange;
 
 			OpacityMaskOverlay.Changed += OpacityMaskOverlay_OnChanged;
+
+			InitializeIntelCoachOverlay();
 		}
 
 		internal double ScreenRatio => (4.0 / 3.0) / (Width / Height);

@@ -10,6 +10,7 @@ using Hearthstone_Deck_Tracker.Commands;
 using Hearthstone_Deck_Tracker.FlyoutControls.Options;
 using Hearthstone_Deck_Tracker.FlyoutControls.Options.HSReplay;
 using Hearthstone_Deck_Tracker.FlyoutControls.Options.Overlay;
+using Hearthstone_Deck_Tracker.FlyoutControls.Options.HSIntel;
 using Hearthstone_Deck_Tracker.FlyoutControls.Options.Streaming;
 using Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker;
 using Hearthstone_Deck_Tracker.Hearthstone;
@@ -42,6 +43,7 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls
 		public readonly OverlayArena OptionsOverlayArena = new OverlayArena();
 		public readonly OverlayMercenaries OptionsOverlayMercenaries = new OverlayMercenaries();
 		public readonly OptionsSearch OptionsSearch = new OptionsSearch();
+		public readonly UpstreamStatus OptionsHSIntelUpstreamStatus = new UpstreamStatus();
 		private string? _contentHeader;
 		private object? _optionsContent;
 		private readonly object[] _hsreplayOptions;
@@ -234,6 +236,12 @@ namespace Hearthstone_Deck_Tracker.FlyoutControls
 			ContentHeader = LocUtil.Get("Options_HSReplay_Collection_Header");
 			OptionsContent = OptionsHSReplayCollection;
 			OptionsHSReplayCollection.UpdateSyncAge();
+		}
+
+		private void TreeViewItemHSIntelUpstreamStatus_OnSelected(object sender, RoutedEventArgs e)
+		{
+			ContentHeader = "Upstream Status";
+			OptionsContent = OptionsHSIntelUpstreamStatus;
 		}
 
 		private void TreeViewItemBattlegroundsOverlay_OnSelected(object sender, RoutedEventArgs e)

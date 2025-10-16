@@ -9,6 +9,7 @@ using Hearthstone_Deck_Tracker.Enums;
 using Hearthstone_Deck_Tracker.HsReplay;
 using Hearthstone_Deck_Tracker.Utility;
 using Hearthstone_Deck_Tracker.Utility.Logging;
+using HSIntel.Core.Config;
 
 #endregion
 
@@ -344,6 +345,13 @@ namespace Hearthstone_Deck_Tracker
 
 		[DefaultValue(true)]
 		public bool GoogleAnalytics = true;
+
+		// HSIntel: Disable HDT auto-updater when true
+		[DefaultValue(true)]
+		public bool HSIntelDisableAutoUpdate = true;
+
+		// HSIntel: Nested configuration persisted in main config.xml
+		public HSIntelConfig HSIntel = new HSIntelConfig();
 
 		[DefaultValue(@"C:\Program Files (x86)\Hearthstone")]
 		public string HearthstoneDirectory = @"C:\Program Files (x86)\Hearthstone";

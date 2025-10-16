@@ -33,6 +33,7 @@ using System.Net.Http;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Hearthstone_Deck_Tracker.Hearthstone.Entities;
+using Hearthstone_Deck_Tracker.HSIntel;
 using Hearthstone_Deck_Tracker.Live;
 using Hearthstone_Deck_Tracker.Stats;
 
@@ -120,7 +121,7 @@ namespace Hearthstone_Deck_Tracker
 
 			Log.Info($"HDT: {Helper.GetCurrentVersion()}, Operating System: {Helper.GetWindowsVersion()}, .NET Framework: {Helper.GetInstalledDotNetVersion()}");
 #if(SQUIRREL)
-			if(Config.Instance.CheckForUpdates)
+			if(Config.Instance.CheckForUpdates && !Config.Instance.HSIntelDisableAutoUpdate)
 			{
 				var updateCheck = Updater.StartupUpdateCheck();
 				while(!updateCheck.IsCompleted)
@@ -240,6 +241,7 @@ namespace Hearthstone_Deck_Tracker
 			PluginManager.Instance.LoadPluginsFromDefaultPath();
 			MainWindow.Options.OptionsTrackerPlugins.Load();
 			PluginManager.Instance.StartUpdateAsync();
+			HSIntelBootstrapper.EnsureInitialized();
 
 			UpdateOverlayAsync();
 
@@ -339,6 +341,7 @@ namespace Hearthstone_Deck_Tracker
 				DeckList.Save();
 				DeckStatsList.Save();
 				PluginManager.SavePluginsSettings();
+				HSIntelBootstrapper.Shutdown();
 				PluginManager.Instance.UnloadPlugins();
 			}
 			catch(Exception e)
@@ -379,13 +382,13 @@ namespace Hearthstone_Deck_Tracker
 		private static async void UpdateOverlayAsync()
 		{
 #if(!SQUIRREL)
-			if(Config.Instance.CheckForUpdates)
+			if(Config.Instance.CheckForUpdates && !Config.Instance.HSIntelDisableAutoUpdate)
 				Updater.CheckForUpdates(true);
 #endif
 			var hsForegroundChanged = false;
 			while(_updateOverlay)
 			{
-				if(Config.Instance.CheckForUpdates)
+				if(Config.Instance.CheckForUpdates && !Config.Instance.HSIntelDisableAutoUpdate)
 					Updater.CheckForUpdates();
 				if(User32.GetHearthstoneWindow() != IntPtr.Zero)
 				{

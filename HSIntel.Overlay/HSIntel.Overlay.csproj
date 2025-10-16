@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>HSIntel.Overlay</RootNamespace>
+    <AssemblyName>HSIntel.Overlay</AssemblyName>
+    <LangVersion>10</LangVersion>
+    <Nullable>disable</Nullable>
+    <Platforms>x86</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HSIntel.Core\HSIntel.Core.csproj" />
+    <ProjectReference Include="..\HSIntel.Engine\HSIntel.Engine.csproj" />
+  </ItemGroup>
+</Project>
