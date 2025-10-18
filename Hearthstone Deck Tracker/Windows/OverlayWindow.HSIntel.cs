@@ -162,7 +162,8 @@ namespace Hearthstone_Deck_Tracker.Windows
                 var src = new System.Windows.Point(srcScreen.X - overlay.X, srcScreen.Y - overlay.Y);
                 var dst = new System.Windows.Point(dstScreen.X - overlay.X, dstScreen.Y - overlay.Y);
 
-                _intelOverlayHost.Arrows.ShowDebugArrow(src, dst);
+                // _intelOverlayHost was null-checked above; use null-forgiving to satisfy analysis.
+                _intelOverlayHost!.Arrows.ShowDebugArrow(src, dst);
             }
             catch(Exception ex)
             {

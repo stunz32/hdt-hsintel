@@ -119,6 +119,12 @@ namespace HSIntel.Engine.Services
             {
                 var config = _configProvider() ?? new HSIntelConfig();
                 var result = _beamSearch.Search(context, config, cancellationToken);
+                try
+                {
+                    var t = result.TranspositionStats;
+                    Trace.WriteLine($"[HSIntel][Engine] BeamResult: best={result.Evaluation.TotalScore:F2} nodes={result.NodesEvaluated} depth={result.DepthReached} elapsed={result.Elapsed.TotalMilliseconds:F0}ms timedOut={result.TimedOut} ttable={t.Hits}/{t.Probes} hits size={t.Size}");
+                }
+                catch { }
                 DecisionComputed?.Invoke(this, new DecisionComputedEventArgs(context, result));
             }
             catch(OperationCanceledException)

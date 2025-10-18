@@ -7,7 +7,7 @@ namespace HSIntel.Core.Config
         // Search parameters
         public int BeamWidth { get; set; } = 10;
         public int Depth { get; set; } = 5;
-        public int MaxComputeMs { get; set; } = 150;
+        public int MaxComputeMs { get; set; } = 250;
 
         // Rollout triggers
         public bool EnableRollouts { get; set; } = false;
@@ -23,4 +23,3 @@ namespace HSIntel.Core.Config
         public bool EnableHearthstoneJsonFallback { get; set; } = true;
     }
 }
-

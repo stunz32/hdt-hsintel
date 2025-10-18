@@ -57,10 +57,11 @@ namespace Hearthstone_Deck_Tracker.HSIntel
 				turnNumber == 0 ? (int?)null : turnNumber,
 				activeSide,
 				dataQuality,
-				timestamp,
-				game.CurrentGameStats?.GameId?.ToString(),
-				friendlyPlayer?.HandCount,
-				opponentPlayer?.HandCount);
+                timestamp,
+                // GameId is a Guid (value type). Only guard against null CurrentGameStats.
+                game.CurrentGameStats != null ? game.CurrentGameStats.GameId.ToString() : null,
+                friendlyPlayer?.HandCount,
+                opponentPlayer?.HandCount);
 		}
 
 		private static HeroDescriptor? BuildHeroDescriptor(Player? player, ParticipantSide side)
@@ -116,16 +117,17 @@ namespace Hearthstone_Deck_Tracker.HSIntel
 			foreach(var entity in player.Board.Where(e => e.IsMinion).OrderBy(e => e.ZonePosition))
 			{
 				var keywords = BuildKeywords(entity);
-				var descriptor = new MinionDescriptor(
-					side,
-					entity.Id,
-					entity.CardId,
-					entity.LocalizedName ?? entity.CardId,
-					entity.Attack,
-					entity.Health,
-					Math.Max(0, entity.ZonePosition - 1),
-					keywords,
-					entity.HasTag(GameTag.DIVINE_SHIELD),
+                var safeHealth = Math.Max(0, entity.Health);
+                var descriptor = new MinionDescriptor(
+                    side,
+                    entity.Id,
+                    entity.CardId,
+                    entity.LocalizedName ?? entity.CardId,
+                    entity.Attack,
+                    safeHealth,
+                    Math.Max(0, entity.ZonePosition - 1),
+                    keywords,
+                    entity.HasTag(GameTag.DIVINE_SHIELD),
 					entity.HasTag(GameTag.TAUNT),
 					entity.HasTag(GameTag.STEALTH),
 					entity.HasTag(GameTag.FROZEN),
@@ -241,8 +243,9 @@ namespace Hearthstone_Deck_Tracker.HSIntel
 			var used = entity.GetTag(GameTag.RESOURCES_USED);
 			var temp = entity.GetTag(GameTag.TEMP_RESOURCES);
 			var available = Math.Max(0, total + temp - used);
-			var overloaded = entity.GetTag(GameTag.OVERLOAD_LOCKED);
-			var locked = entity.GetTag(GameTag.LOCKED_RESOURCES);
+            var overloaded = entity.GetTag(GameTag.OVERLOAD_LOCKED);
+            // Some HearthDb versions do not expose LOCKED_RESOURCES; treat as unknown when unavailable.
+            int? locked = null;
 
 			return new ManaDescriptor(
 				side,

@@ -87,6 +87,7 @@ namespace HSIntel.Engine.Simulator
 
             var attackerClone = friendlyMinions[attackerIndex];
             var attackerAttack = attackerClone.Attack ?? 0;
+            var attackerHealthBefore = attackerClone.Health ?? 0;
 
             HeroState friendlyHero = context.Board.FriendlyHero;
             HeroState opponentHero = context.Board.OpponentHero;
@@ -95,6 +96,20 @@ namespace HSIntel.Engine.Simulator
             var opponentMinionsRemoved = 0;
             var damageToOpponentHero = 0;
             var damageToFriendlyHero = 0;
+
+            // Capture target pre-state for concise summary logging
+            int targetHealthBefore = 0;
+            string targetNameForLog = target.IsHero ? "Opponent Hero" : "Opponent Minion";
+            if(!target.IsHero)
+            {
+                var idx = FindMinionIndex(opponentMinions, target);
+                if(idx >= 0)
+                {
+                    var t = opponentMinions[idx];
+                    targetHealthBefore = t.Health ?? 0;
+                    targetNameForLog = string.IsNullOrWhiteSpace(t.CardName) ? (t.CardId ?? "Minion") : t.CardName!;
+                }
+            }
 
             if(target.IsHero)
             {
@@ -184,6 +199,33 @@ namespace HSIntel.Engine.Simulator
                 opponentMinionsRemoved: opponentMinionsRemoved,
                 damageDealtToOpponentHero: damageToOpponentHero,
                 damageTakenByFriendlyHero: damageToFriendlyHero);
+
+            // Build concise attack summary log (attacker/target health before -> after)
+            try
+            {
+                var attackerIdxPost = FindMinionIndex(updatedBoard.FriendlyMinions.ToList(), attackerClone);
+                var attackerHealthAfter = attackerIdxPost >= 0 ? (updatedBoard.FriendlyMinions[attackerIdxPost].Health ?? 0) : 0;
+
+                int targetHealthAfter;
+                if(target.IsHero)
+                {
+                    var oppHeroPost = updatedBoard.OpponentHero;
+                    targetHealthAfter = (oppHeroPost.Health ?? 0) + (oppHeroPost.Armor ?? 0);
+                    targetNameForLog = "Opponent Hero";
+                }
+                else
+                {
+                    var tIdxPost = FindMinionIndex(updatedBoard.OpponentMinions.ToList(), target);
+                    targetHealthAfter = tIdxPost >= 0 ? (updatedBoard.OpponentMinions[tIdxPost].Health ?? 0) : 0;
+                }
+
+                var attackerNameForLog = string.IsNullOrWhiteSpace(attackerClone.CardName)
+                    ? (attackerClone.CardId ?? $"Minion#{attackerClone.EntityId?.ToString() ?? "?"}")
+                    : attackerClone.CardName!;
+
+                Trace.WriteLine($"[HSIntel][Engine] AttackSummary: {attackerNameForLog} {attackerHealthBefore}->{attackerHealthAfter} vs {targetNameForLog} {targetHealthBefore}->{targetHealthAfter} removed F={friendlyMinionsRemoved} O={opponentMinionsRemoved}");
+            }
+            catch { }
 
             return new SimulationResult(updatedContext, metrics, true);
         }
