@@ -1,10 +1,12 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using HSIntel.Core.Config;
 using HSIntel.Overlay.Interfaces;
 using HSIntel.Overlay.Layers;
 using HSIntel.Overlay.Models;
+using HSIntel.Overlay.Utils;
 
 namespace HSIntel.Overlay.Controls
 {
@@ -14,6 +16,7 @@ namespace HSIntel.Overlay.Controls
         private double _hudTopPct = 90.0;
         private HSIntelConfig? _configSnapshot;
         private IOverlayCoordinateMapper? _coordinateMapper;
+        private bool _debugMode;
 
         public event EventHandler<HudPositionChangedEventArgs>? HudPositionChanged;
         public event EventHandler<bool>? HudEnabledChanged;
@@ -49,6 +52,9 @@ namespace HSIntel.Overlay.Controls
             UpdateHudEnabledState(_configSnapshot.CoachEnabled);
 
             UpdateHudPosition();
+
+            // Debug overlay mode
+            SetDebugMode(_configSnapshot.DebugOverlayMode);
         }
 
         public void SetCoordinateMapper(IOverlayCoordinateMapper mapper)
@@ -70,6 +76,9 @@ namespace HSIntel.Overlay.Controls
         {
             UpdateHudPosition();
             _coordinateMapper?.Refresh();
+
+            if(_debugMode)
+                DebugLayer.RenderMarkers(new Size(ActualWidth, ActualHeight));
         }
 
         private void UpdateHudPosition()
@@ -152,6 +161,7 @@ namespace HSIntel.Overlay.Controls
             SizeChanged -= OnSizeChanged;
             Unloaded -= OnUnloaded;
             _coordinateMapper = null;
+            CompositionTarget.Rendering -= OnCompositionTargetRendering;
         }
 
         private void OnCoachEnabledChanged(object? sender, bool isEnabled)
@@ -172,6 +182,90 @@ namespace HSIntel.Overlay.Controls
             if(pct < 5) return 0;
             if(pct > 95) return 100;
             return pct;
+        }
+
+        private void SetDebugMode(bool enabled)
+        {
+            _debugMode = enabled;
+            OverlayLog.Enabled = enabled;
+            DebugLayer.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
+
+            CompositionTarget.Rendering -= OnCompositionTargetRendering;
+            if(enabled)
+            {
+                DebugLayer.RenderMarkers(new Size(ActualWidth, ActualHeight));
+                CompositionTarget.Rendering += OnCompositionTargetRendering;
+                OverlayLog.Info("DebugOverlayMode=ON");
+            }
+            else
+            {
+                OverlayLog.Info("DebugOverlayMode=OFF");
+            }
+        }
+
+        private void OnCompositionTargetRendering(object? sender, EventArgs e)
+        {
+            if(!_debugMode)
+                return;
+            PollRecommendationDebug();
+            LogRenderTick();
+        }
+
+        private void LogRenderTick()
+        {
+            try
+            {
+                var dpi = VisualTreeHelper.GetDpi(this);
+                var size = $"{ActualWidth:0}x{ActualHeight:0}";
+
+                var badges = Orders.RetainedPayload.Count;
+                var arrows = Arrows.RetainedPayload.Count;
+                var halos = Halo.RetainedPayload.Count;
+
+                // Naive mapped point estimate: badges=1, arrow endpoints=2, halo endpoints=2
+                var mapped = badges + (arrows * 2) + (halos * 2);
+
+                var visualsOrders = Orders.Children.Count;
+                var visualsArrows = Arrows.Children.Count;
+                var visualsHalos = Halo.Children.Count;
+                var visualsDebug = DebugLayer.Children.Count;
+                var visualsHud = 1; // CoachHud shell
+                var totalVisuals = visualsOrders + visualsArrows + visualsHalos + visualsDebug + visualsHud;
+
+                if(_coordinateMapper == null)
+                    OverlayLog.Warn("CoordinateMapper=NULL (no mapping available)
+");
+
+                OverlayLog.Info(
+                    $"RenderTick size={size} dpi={dpi.DpiScaleX:0.##}x{dpi.DpiScaleY:0.##} " +
+                    $"payload{{badges={badges},arrows={arrows},halos={halos}}} " +
+                    $"mapped_points={mapped} visuals{{orders={visualsOrders},arrows={visualsArrows},halos={visualsHalos},debug={visualsDebug},hud={visualsHud}}} total={totalVisuals}");
+            }
+            catch (Exception ex)
+            {
+                OverlayLog.Warn($"RenderTick error: {ex.Message}");
+            }
+        }
+
+        private int _lastDebugStepCount = -1;
+        private void PollRecommendationDebug()
+        {
+            try
+            {
+                var rsType = Type.GetType("HSIntel.Engine.Services.RecommendationService, HSIntel.Engine");
+                var method = rsType?.GetMethod("GetCurrentActionsOrEmpty", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                if(method == null)
+                    return;
+
+                var list = method.Invoke(null, null) as System.Collections.ICollection;
+                var count = list?.Count ?? 0;
+                if(count != _lastDebugStepCount)
+                {
+                    _lastDebugStepCount = count;
+                    OverlayLog.Info($"RecommendationChanged steps={count}");
+                }
+            }
+            catch { }
         }
     }
 }

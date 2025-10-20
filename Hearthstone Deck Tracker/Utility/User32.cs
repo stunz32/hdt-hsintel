@@ -25,7 +25,8 @@ namespace Hearthstone_Deck_Tracker
 			Wheel = 0x00000800
 		}
 
-		public const int WsExTransparent = 0x00000020;
+        public const int WsExTransparent = 0x00000020;
+        public const int WsExLayered = 0x00080000;
 		public const int WsExToolWindow = 0x00000080;
 		public const int WsExTopmost = 0x00000008;
 		public const int WsExNoActivate = 0x08000000;
@@ -55,7 +56,7 @@ namespace Hearthstone_Deck_Tracker
 		public static extern IntPtr GetForegroundWindow();
 
 		[DllImport("user32.dll")]
-		private static extern int GetWindowLong(IntPtr hwnd, int index);
+        private static extern int GetWindowLong(IntPtr hwnd, int index);
 
 		[DllImport("user32.dll")]
 		private static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
@@ -103,7 +104,9 @@ namespace Hearthstone_Deck_Tracker
 		[DllImport("user32.dll")]
 		internal static extern bool UnhookWinEvent(IntPtr hWinEventHook);
 
-		public static void SetWindowExStyle(IntPtr hwnd, int style) => SetWindowLong(hwnd, GwlExstyle, GetWindowLong(hwnd, GwlExstyle) | style);
+        public static void SetWindowExStyle(IntPtr hwnd, int style) => SetWindowLong(hwnd, GwlExstyle, GetWindowLong(hwnd, GwlExstyle) | style);
+
+        public static int GetWindowExStyle(IntPtr hwnd) => GetWindowLong(hwnd, GwlExstyle);
 
 		public static void RemoveWindowExStyle(IntPtr hwnd, int style) => SetWindowLong(hwnd, GwlExstyle, GetWindowLong(hwnd, GwlExstyle) & ~style);
 

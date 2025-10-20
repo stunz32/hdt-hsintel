@@ -1,0 +1,12 @@
+﻿{
+  ""lethal.direct"": ""lethal_direct"",
+  ""lethal.setup"": ""lethal_setup"",
+  ""tempo.gain"": ""tempo_gain"",
+  ""trade.clean"": ""trade_clean"",
+  ""removal.efficient"": ""removal_efficient"",
+  ""face.damage"": ""face_damage"",
+  ""draw.thin"": ""draw_thin"",
+  ""secret.probe"": ""secret_probe_{secret}"",
+  ""setup.synergy"": ""setup_synergy"",
+  ""curve.mana"": ""curve_mana""
+}

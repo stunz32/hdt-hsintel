@@ -1,0 +1,12 @@
+﻿{
+  ""lethal_direct"": {""medium"": ""This line deals lethal damage now."", ""full"": ""The sequence accumulates enough damage to reduce the opponent to 0 this turn, considering eligible attackers and known modifiers.""},
+  ""lethal_setup"": {""medium"": ""Sets up a likely lethal next turn."", ""full"": ""Positions board and resources to enable lethal on the next turn barring strong disruption.""},
+  ""tempo_gain"": {""medium"": ""Maximizes tempo and board control."", ""full"": ""Prioritizes plays that add the most stats to board this turn while preserving future options.""},
+  ""trade_clean"": {""medium"": ""Takes the cleanest trade."", ""full"": ""Removes the highest‑threat enemy with minimal resource loss and no overkill waste.""},
+  ""removal_efficient"": {""medium"": ""Uses the most efficient removal."", ""full"": ""Chooses removal with the best cost-to-impact ratio given hand and mana curve.""},
+  ""face_damage"": {""medium"": ""Pushes safe face damage."", ""full"": ""Transfers spare damage to enemy hero when board is stable and lethal counters are unlikely.""},
+  ""draw_thin"": {""medium"": ""Improves hand quality."", ""full"": ""Draws or filters to increase access to key outs while respecting next-turn curve.""},
+  ""secret_probe_{secret}"": {""medium"": ""Probes for {secret}."", ""full"": ""Orders actions to test {secret} safely and unlock higher-value lines.""},
+  ""setup_synergy"": {""medium"": ""Sets up a synergy payoff."", ""full"": ""Plays enablers before payoffs to maximize value across turns.""},
+  ""curve_mana"": {""medium"": ""Spends mana efficiently."", ""full"": ""Sequences plays to minimize floating mana now while preserving flexibility later.""}
+}

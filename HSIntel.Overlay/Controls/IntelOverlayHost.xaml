@@ -10,11 +10,14 @@
                 IsHitTestVisible="False"
                 Background="{x:Null}">
             <layers:OrdersAdornerLayer x:Name="OrdersLayer"
-                                       Panel.ZIndex="10"/>
+                                       Panel.ZIndex="40"/>
             <layers:ArrowAdornerLayer x:Name="ArrowLayer"
-                                      Panel.ZIndex="20"/>
+                                      Panel.ZIndex="30"/>
             <layers:HaloAdornerLayer x:Name="HaloLayer"
-                                     Panel.ZIndex="30"/>
+                                     Panel.ZIndex="20"/>
+            <layers:DebugAdornerLayer x:Name="DebugLayer"
+                                      Panel.ZIndex="50"
+                                      Visibility="Collapsed"/>
         </Canvas>
 
         <Canvas x:Name="HudSurface"
@@ -26,4 +29,3 @@
         </Canvas>
     </Grid>
 </UserControl>
-

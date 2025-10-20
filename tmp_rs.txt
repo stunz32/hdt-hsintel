@@ -1,0 +1,191 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using HSIntel.Engine.Models;
+using HSIntel.Core.Models;
+
+namespace HSIntel.Engine.Services
+{
+    /// <summary>
+    /// Internal-only store + mapper for play recommendations.
+    /// Builds a stable sequence from a SearchResult without extra simulation or logging.
+    /// </summary>
+    public static class RecommendationService
+    {
+        // Explanations cache (internal); overlay reads via reflection.
+        private static object _lastExplanationSet;
+
+        private static readonly object _sync = new object();
+        private static PlayRecommendationSet? _current;
+        private static string? _lastSignature;
+        private static int _cacheHits;
+        private static int _cacheMisses;
+        private static int _consecutiveOverBudget;
+
+        internal static PlayRecommendationSet? Current
+        {
+            get
+            {
+                lock(_sync)
+                    return _current;
+            }
+        }
+
+        internal static void UpdateFromResult(SearchResult result)
+        {
+            if(result == null)
+                throw new ArgumentNullException(nameof(result));
+
+            var signature = ComputeStateSignature(result.InitialContext);
+            bool cacheHit;
+            lock(_sync)
+            {
+                cacheHit = _lastSignature != null && _lastSignature == signature && _current != null;
+                if(cacheHit)
+                {
+                    _cacheHits++;
+                    return; // recommendation unchanged for same state
+                }
+                _cacheMisses++;
+            }
+
+            // Map already-simulated actions to a stable, ordered recommendation list.
+            var steps = new List<PlayRecommendationStep>(result.Actions.Count);
+            for(var i = 0; i < result.Actions.Count; i++)
+            {
+                var action = result.Actions[i];
+                steps.Add(new PlayRecommendationStep(i + 1, action));
+            }
+
+            // Determine lethal from final board state only; avoids extra work.
+            var opp = result.FinalContext.Board.OpponentHero;
+            var oppEffective = (opp.Health ?? 0) + (opp.Armor ?? 0);
+            var isLethal = oppEffective <= 0;
+
+            var set = new PlayRecommendationSet(
+                steps,
+                isLethal,
+                result.Evaluation.TotalScore,
+                result.DepthReached,
+                result.NodesEvaluated,
+                result.Elapsed,
+                result.TimedOut,
+                DateTimeOffset.UtcNow);
+
+            // Compose explanations once per evaluation (internal-only)
+            try { _lastExplanationSet = HSIntel.Engine.Explain.ExplainComposer.Compose(result); } catch { }
+
+            lock(_sync)
+            {
+                _current = set;
+                _lastSignature = signature;
+            }
+
+            MaybeLogPerf(set, result.InitialContext);
+            MaybeAutoDisable(set, result.InitialContext);
+        }
+
+        // Public, minimal exposure for downstream consumers without introducing new public model types.
+        // Returns the currently recommended action line (already simulated), or an empty list if unavailable.
+        public static IReadOnlyList<GameAction> GetCurrentActionsOrEmpty()
+        {
+            lock(_sync)
+            {
+                if(_current == null)
+                    return Array.Empty<GameAction>();
+
+                var actions = new List<GameAction>(_current.Steps.Count);
+                for(var i = 0; i < _current.Steps.Count; i++)
+                    actions.Add(_current.Steps[i].Action);
+                return actions;
+            }
+        }
+
+        internal static void Clear()
+        {
+            lock(_sync)
+            {
+                _current = null;
+                _lastSignature = null;
+            }
+        }
+
+        private static string ComputeStateSignature(GameContext ctx)
+        {
+            // Minimal, deterministic signature using key observable fields.
+            var fh = ctx.FriendlyHand.TotalCardCount ?? ctx.FriendlyHand.Cards.Count;
+            var oh = ctx.OpponentHand.TotalCardCount ?? ctx.OpponentHand.Cards.Count;
+            var fm = ctx.Board.FriendlyMinions.Count;
+            var om = ctx.Board.OpponentMinions.Count;
+            var fhp = (ctx.Board.FriendlyHero.Health ?? 0) + (ctx.Board.FriendlyHero.Armor ?? 0);
+            var ohp = (ctx.Board.OpponentHero.Health ?? 0) + (ctx.Board.OpponentHero.Armor ?? 0);
+            var fmana = ctx.FriendlyMana.Available ?? ctx.FriendlyMana.Total ?? 0;
+            var omana = ctx.OpponentMana.Available ?? ctx.OpponentMana.Total ?? 0;
+            var secrets = ctx.Board.Secrets.Count;
+            var turn = ctx.TurnNumber ?? -1;
+            return string.Join("|", fh, oh, fm, om, fhp, ohp, fmana, omana, secrets, turn);
+        }
+
+        private static void MaybeLogPerf(PlayRecommendationSet set, GameContext initial)
+        {
+            if(!Internal.EngineToggles.EnableRecommendationPerfLogging)
+                return;
+
+            try
+            {
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var dir = System.IO.Path.Combine(baseDir, "logs");
+                System.IO.Directory.CreateDirectory(dir);
+                var path = System.IO.Path.Combine(dir, "HSIntel-perf.txt");
+                var alternatesDropped = Math.Max(0, set.NodesEvaluated - set.Steps.Count);
+                var line = string.Format(
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    "{0:O}\tturn={1}\telapsedMs={2}\tnodes={3}\tdropped={4}\ttimedOut={5}\tscore={6:F2}",
+                    set.GeneratedAt,
+                    initial.TurnNumber ?? -1,
+                    set.Elapsed.TotalMilliseconds,
+                    set.NodesEvaluated,
+                    alternatesDropped,
+                    set.TimedOut,
+                    set.TotalScore);
+                // Open with share + retry to avoid transient IO exceptions in VS output window.
+                const int maxRetries = 2;
+                for(int attempt = 0; attempt <= maxRetries; attempt++)
+                {
+                    try
+                    {
+                        using(var fs = new System.IO.FileStream(path, System.IO.FileMode.Append, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite))
+                        using(var sw = new System.IO.StreamWriter(fs))
+                            sw.WriteLine(line);
+                        break;
+                    }
+                    catch(System.IO.IOException)
+                    {
+                        if(attempt == maxRetries) throw;
+                        Thread.Sleep(10);
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private static void MaybeAutoDisable(PlayRecommendationSet set, GameContext initial)
+        {
+            if(!Internal.EngineToggles.EnableAutoDisableRecommendation)
+                return;
+
+            var budget = Math.Max(50, (initial.FriendlyMana.Total ?? 0) > 0 ? 0 : 0); // placeholder, no external budget here
+            if(set.Elapsed.TotalMilliseconds > 1.2 * 100.0)
+                _consecutiveOverBudget++;
+            else
+                _consecutiveOverBudget = 0;
+
+            if(_consecutiveOverBudget >= 3)
+            {
+                Internal.EngineToggles.EnableRecommendationPipeline = false;
+                _consecutiveOverBudget = 0;
+            }
+        }
+    }
+}
+

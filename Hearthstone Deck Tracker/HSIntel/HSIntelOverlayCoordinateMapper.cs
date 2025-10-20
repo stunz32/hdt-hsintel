@@ -33,6 +33,7 @@ namespace Hearthstone_Deck_Tracker.HSIntel
 			var overlayRect = new Rect(_overlayWindow.Left, _overlayWindow.Top, overlayWidth, overlayHeight);
 
 			var regionDrawer = new Utility.RegionDrawer.RegionDrawer(overlayHeight, overlayWidth, _overlayWindow.ScreenRatio);
+			Log.Debug($"[HSIntel][Overlay] Mapper ratio: {_overlayWindow.ScreenRatio:0.######}");
 
 			var boardNormalized = CombineBoardRegions(regionDrawer);
 			var handNormalized = CombineHandRegions(regionDrawer);
@@ -99,5 +100,4 @@ namespace Hearthstone_Deck_Tracker.HSIntel
 		}
 	}
 }
-
 

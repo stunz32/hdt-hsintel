@@ -37,14 +37,17 @@ namespace Hearthstone_Deck_Tracker.Windows
                     _intelOverlayHost.HudEnabledChanged += OnIntelHudEnabledChanged;
                     _intelOverlayHost.HudDragStarted += OnIntelHudDragStarted;
                     _intelOverlayHost.HudDragCompleted += OnIntelHudDragCompleted;
-                    _intelOverlayHost.SizeChanged += (_, __) => TryUpdateDebugArrow();
+                    // Debug arrow disabled for Phase 8 validation
 
                     IntelOverlayMount.Children.Clear();
                     IntelOverlayMount.Children.Add(_intelOverlayHost);
+                    Log.Info($"[HSIntel][Overlay] Host attached. mountZ={Panel.GetZIndex(IntelOverlayMount)} hostZ={Panel.GetZIndex(_intelOverlayHost)} size={IntelOverlayMount.ActualWidth:0}x{IntelOverlayMount.ActualHeight:0}");
                 }
 
                 SyncIntelOverlayHostLayout();
 
+                // Ensure debug overlay is ON for diagnostics and persist it.
+                UpdateHsIntelConfig(cfg => cfg.DebugOverlayMode = true);
                 var config = CloneConfig(Config.Instance.HSIntel ?? new HSIntelConfig());
                 var coordinateMapper = new HSIntelOverlayCoordinateMapper(this);
 
@@ -53,14 +56,7 @@ namespace Hearthstone_Deck_Tracker.Windows
 
                 // Keep HUD interactive when hovered; HDT overlay will pass clicks through when not over this element.
                 SetIntelHudHitTest(true);
-                // Hook a simple debug arrow update once per run to validate layering.
-                if(!_intelArrowHooked)
-                {
-                    _intelArrowHooked = true;
-                    GameEvents.OnTurnStart.Add(_ => TryUpdateDebugArrow());
-                }
-
-                TryUpdateDebugArrow();
+                // Debug arrow disabled
             }
             catch(Exception ex)
             {
@@ -105,14 +101,7 @@ namespace Hearthstone_Deck_Tracker.Windows
                 var snapshot = CloneConfig(Config.Instance.HSIntel ?? new HSIntelConfig());
                 _intelOverlayHost.ApplyConfiguration(snapshot);
                 SetIntelHudHitTest(true);
-                // Hook a simple debug arrow update once per run to validate layering.
-                if(!_intelArrowHooked)
-                {
-                    _intelArrowHooked = true;
-                    GameEvents.OnTurnStart.Add(_ => TryUpdateDebugArrow());
-                }
-
-                TryUpdateDebugArrow();
+                // Debug arrow disabled
             }
         }
 
@@ -131,45 +120,7 @@ namespace Hearthstone_Deck_Tracker.Windows
 
         private void OnIntelHudDragCompleted(object? sender, EventArgs e) { }
 
-        private void TryUpdateDebugArrow()
-        {
-            try
-            {
-                if(_intelOverlayHost == null)
-                    return;
-
-                if(!_intelOverlayHost.Dispatcher.CheckAccess())
-                {
-                    _intelOverlayHost.Dispatcher.InvokeAsync(TryUpdateDebugArrow);
-                    return;
-                }
-
-                var mapper = _intelOverlayHost?.Hud?.CoordinateMapper;
-                if(mapper == null)
-                    return;
-
-                // Centers in screen coords
-                var board = mapper.BoardRegion;
-                var hand = mapper.PlayerHandRegion;
-                if(board.Width <= 0 || board.Height <= 0 || hand.Width <= 0 || hand.Height <= 0)
-                    return;
-
-                var overlay = mapper.OverlayBounds;
-                var srcScreen = new System.Windows.Point(board.X + board.Width / 2, board.Y + board.Height / 2);
-                var dstScreen = new System.Windows.Point(hand.X + hand.Width / 2, hand.Y + hand.Height / 2);
-
-                // Translate to overlay-host local coords
-                var src = new System.Windows.Point(srcScreen.X - overlay.X, srcScreen.Y - overlay.Y);
-                var dst = new System.Windows.Point(dstScreen.X - overlay.X, dstScreen.Y - overlay.Y);
-
-                // _intelOverlayHost was null-checked above; use null-forgiving to satisfy analysis.
-                _intelOverlayHost!.Arrows.ShowDebugArrow(src, dst);
-            }
-            catch(Exception ex)
-            {
-                Log.Debug("[HSIntel][Overlay] Debug arrow update failed: " + ex.Message);
-            }
-        }
+        // Debug arrow removed
 
 
         private static HSIntelConfig CloneConfig(HSIntelConfig config) => new HSIntelConfig
@@ -182,6 +133,7 @@ namespace Hearthstone_Deck_Tracker.Windows
             HudLeftPct = config.HudLeftPct,
             HudTopPct = config.HudTopPct,
             CoachEnabled = config.CoachEnabled,
+            DebugOverlayMode = config.DebugOverlayMode,
             PreferHdtData = config.PreferHdtData,
             EnableHearthstoneJsonFallback = config.EnableHearthstoneJsonFallback
         };

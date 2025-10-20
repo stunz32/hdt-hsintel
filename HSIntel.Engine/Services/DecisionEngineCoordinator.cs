@@ -11,6 +11,8 @@ using HSIntel.Engine.Models;
 using HSIntel.Engine.MoveGen;
 using HSIntel.Engine.Search;
 using HSIntel.Engine.Simulator;
+using HSIntel.Engine.Lethal;
+using HSIntel.Engine.Secrets;
 
 namespace HSIntel.Engine.Services
 {
@@ -118,6 +120,71 @@ namespace HSIntel.Engine.Services
             try
             {
                 var config = _configProvider() ?? new HSIntelConfig();
+                try
+                {
+                    // RNG gating (stub only)
+                    if(!config.EnableRollouts || config.RolloutSamples <= 0)
+                        Trace.WriteLine("[HSIntel][Engine] RNG: skipped (disabled)");
+                }
+                catch { }
+
+                // Secrets: summarize and propose safe probe order (logs only)
+                try
+                {
+                    SecretHandler.SummarizeOpponentSecrets(context);
+                    SecretHandler.EmitProbeOrder(context);
+                }
+                catch { }
+
+                // Lethal fast-path (board-only, minions only)
+                try
+                {
+                    var lethal = new LethalSolver().TryFindLethal(context, config);
+                    if(lethal != null && lethal.Actions.Count > 0)
+                    {
+                        var start = Stopwatch.StartNew();
+
+                        var actions = lethal.Actions;
+                        var metrics = SimulationMetrics.Empty;
+                        var current = context;
+
+                        foreach(var action in actions)
+                        {
+                            var sim = _boardSimulator.Simulate(current, action);
+                            if(!sim.IsValid)
+                                break;
+                            metrics = metrics.Add(sim.Metrics);
+                            current = sim.Context;
+                        }
+
+                        var eval = _stateEvaluator.Evaluate(current, metrics);
+                        start.Stop();
+
+                        var fastResult = new SearchResult(
+                            context,
+                            current,
+                            actions,
+                            eval,
+                            metrics,
+                            nodesEvaluated: 0,
+                            depthReached: actions.Count,
+                            elapsed: start.Elapsed,
+                            timedOut: false,
+                            transpositionStats: new TranspositionStats(0, 0, 0, 0, 0));
+
+                        try
+                        {
+                            var t = fastResult.TranspositionStats;
+                            Trace.WriteLine($"[HSIntel][Engine] BeamResult: best={fastResult.Evaluation.TotalScore:F2} nodes={fastResult.NodesEvaluated} depth={fastResult.DepthReached} elapsed={fastResult.Elapsed.TotalMilliseconds:F0}ms timedOut={fastResult.TimedOut} ttable={t.Hits}/{t.Probes} hits size={t.Size}");
+                        }
+                        catch { }
+
+                        DecisionComputed?.Invoke(this, new DecisionComputedEventArgs(context, fastResult));
+                        return; // do not call beam search if lethal was found
+                    }
+                }
+                catch { }
+
                 var result = _beamSearch.Search(context, config, cancellationToken);
                 try
                 {

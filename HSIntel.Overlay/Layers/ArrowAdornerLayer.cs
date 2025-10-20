@@ -7,6 +7,7 @@ namespace HSIntel.Overlay.Layers
 {
     public sealed class ArrowAdornerLayer : IntelAdornerLayer
     {
+        protected override string LayerName => "Arrows";
         public void SetArrows(IEnumerable<object>? arrows)
         {
             StoreSnapshot(arrows);

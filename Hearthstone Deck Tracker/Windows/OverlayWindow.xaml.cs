@@ -508,6 +508,8 @@ namespace Hearthstone_Deck_Tracker.Windows
 		{
 			var hwnd = new WindowInteropHelper(this).Handle;
 			User32.SetWindowExStyle(hwnd, User32.WsExToolWindow | User32.WsExNoActivate | User32.WsExTransparent);
+			var ex = User32.GetWindowExStyle(hwnd);
+			Log.Info($"[HSIntel][Overlay] EXSTYLE=0x{ex:X8} layered={(ex & User32.WsExLayered) != 0} transparent={(ex & User32.WsExTransparent) != 0} allowsTransparency={AllowsTransparency}");
 		}
 
 		private bool _clickthrough = false;

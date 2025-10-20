@@ -94,36 +94,52 @@ namespace HSIntel.Engine.MoveGen
                 if(attack <= 0)
                     continue;
 
+                // Respect live readiness using HDT data when available
+                var eid = minion.EntityId;
+                bool canAttackMinions = true, canAttackFace = true;
+                try
+                {
+                    if(eid.HasValue)
+                    {
+                        canAttackMinions = HSIntel.Engine.Internal.HdtEntityCombat.CanAttackMinionsNow(eid.Value);
+                        canAttackFace = HSIntel.Engine.Internal.HdtEntityCombat.CanAttackFaceNow(eid.Value);
+                    }
+                }
+                catch { }
+
                 var minionName = string.IsNullOrWhiteSpace(minion.CardName)
                     ? minion.CardId ?? $"Minion#{minion.EntityId?.ToString() ?? "?"}"
                     : minion.CardName!;
 
-                foreach(var target in opponentMinions)
+                if(canAttackMinions)
                 {
-                    if(target.IsStealthed)
-                        continue;
+                    foreach(var target in opponentMinions)
+                    {
+                        if(target.IsStealthed)
+                            continue;
 
-                    var targetName = string.IsNullOrWhiteSpace(target.CardName)
-                        ? target.CardId ?? $"Minion#{target.EntityId?.ToString() ?? "?"}"
-                        : target.CardName!;
+                        var targetName = string.IsNullOrWhiteSpace(target.CardName)
+                            ? target.CardId ?? $"Minion#{target.EntityId?.ToString() ?? "?"}"
+                            : target.CardName!;
 
-                    var priority = 700 + (attack * 10) - (target.Health ?? 0);
-                    if(target.HasTaunt)
-                        priority += 25;
+                        var priority = 700 + (attack * 10) - (target.Health ?? 0);
+                        if(target.HasTaunt)
+                            priority += 25;
 
-                    var actionTarget = new ActionTarget(ParticipantSide.Opponent, target.EntityId, false, target.CardId, targetName);
-                    var description = $"Attack with {minionName} -> {targetName}";
-                    actions.Add(new GameAction(
-                        GameActionType.Attack,
-                        description,
-                        priority,
-                        card: null,
-                        attacker: minion,
-                        target: actionTarget,
-                        requiresTarget: true));
+                        var actionTarget = new ActionTarget(ParticipantSide.Opponent, target.EntityId, false, target.CardId, targetName);
+                        var description = $"Attack with {minionName} -> {targetName}";
+                        actions.Add(new GameAction(
+                            GameActionType.Attack,
+                            description,
+                            priority,
+                            card: null,
+                            attacker: minion,
+                            target: actionTarget,
+                            requiresTarget: true));
+                    }
                 }
 
-                if(opponentHero != null)
+                if(opponentHero != null && canAttackFace)
                 {
                     var priority = 650 + (attack * 10);
                     var actionTarget = new ActionTarget(ParticipantSide.Opponent, null, true, null, "Hero");
