@@ -1,0 +1,111 @@
+<UserControl x:Class="Hearthstone_Deck_Tracker.FlyoutControls.Options.Tracker.TrackerNotifications"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:options="clr-namespace:Hearthstone_Deck_Tracker.FlyoutControls.Options"
+             xmlns:lex="http://wpflocalizeextension.codeplex.com"
+             lex:LocalizeDictionary.DesignCulture="en"
+             lex:ResxLocalizationProvider.DefaultAssembly="HearthstoneDeckTracker"
+             lex:ResxLocalizationProvider.DefaultDictionary="Strings"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="300">
+    <StackPanel>
+        <GroupBox Header="{lex:LocTextUpper Options_Tracker_Notifications_Label_Alerts}">
+            <StackPanel>
+                <DockPanel>
+                    <Label Content="{lex:Loc Options_Tracker_Notifications_Label_TurnStart}"/>
+                    <ComboBox x:Name="ComboboxTurnAction" HorizontalAlignment="Right" Width="150"
+                      SelectionChanged="ComboboxTurnAction_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=., Converter={StaticResource EnumDescriptionConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </DockPanel>
+                <DockPanel Margin="0,5,0,0">
+                    <Label Content="{lex:Loc Options_Tracker_Notifications_Label_FriendlyChallenge}"/>
+                    <ComboBox x:Name="ComboboxChallengeAction" HorizontalAlignment="Right" Width="150"
+                      SelectionChanged="ComboboxChallengeAction_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=., Converter={StaticResource EnumDescriptionConverter}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </DockPanel>
+                <DockPanel Margin="0,5,0,0" Visibility="{Binding Visibility, Source={x:Static options:AdvancedOptions.Instance}}">
+                    <CheckBox x:Name="CheckboxTimerAlert2" HorizontalAlignment="Left"
+                          ToolTip="{lex:Loc Options_Tracker_General_Label_TimerAlert_Tooltip}"
+                          VerticalAlignment="Top" Checked="CheckboxTimerAlert2_Checked"
+                          Unchecked="CheckboxTimerAlert2_Unchecked">
+                        <StackPanel Orientation="Horizontal" Margin="-5,0,0,0">
+                            <Label Content="{lex:Loc Options_Tracker_General_Label_TimerAlert}" Foreground="{Binding Color, Source={x:Static options:AdvancedOptions.Instance}}"/>
+                            <TextBox x:Name="TextboxTimerAlert2"
+                             HorizontalAlignment="Right" Height="23" HorizontalContentAlignment="Center"
+                             Margin="0,0,0,0" TextWrapping="Wrap" Text="30" VerticalAlignment="Top"
+                             Width="60" TextChanged="TextboxTimerAlert2_TextChanged"
+                             PreviewTextInput="TextboxTimerAlert2_PreviewTextInput" />
+                            <Label Content="{lex:Loc Options_Tracker_General_Label_TimerAlert2}" Foreground="{Binding Color, Source={x:Static options:AdvancedOptions.Instance}}"/>
+                        </StackPanel>
+                    </CheckBox>
+                </DockPanel>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Header="{lex:LocTextUpper Options_Tracker_Notifications_Label_GameResult}">
+            <StackPanel>
+                <CheckBox Name="CheckBoxShowNotifications" Content="{lex:Loc Options_Tracker_Notifications_Label_ShowNotifications}"
+                          Checked="CheckBoxShowNotifications_OnChecked"
+                          Unchecked="CheckBoxShowNotifications_OnUnchecked" />
+                <StackPanel Orientation="Horizontal" Margin="5,5,0,0"
+                            IsEnabled="{Binding Path=IsChecked, ElementName=CheckBoxShowNotifications}">
+                    <TextBlock Text="{lex:Loc Options_Tracker_Notifications_Label_Duration}" VerticalAlignment="Center" />
+                    <TextBox x:Name="TextboxTimerAlert"
+                             HorizontalAlignment="Right" Height="23" HorizontalContentAlignment="Center"
+                             Margin="5,0" TextWrapping="Wrap" Text="4" VerticalAlignment="Top"
+                             Width="40" TextChanged="TextboxTimerAlert_TextChanged"
+                             PreviewTextInput="TextboxTimerAlert_PreviewTextInput" />
+                    <TextBlock Text="{lex:Loc Options_Tracker_Notifications_Label_Duration2}" VerticalAlignment="Center" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
+        <CheckBox x:Name="CheckboxExperienceCounter"
+                  Content="{lex:Loc Options_Tracker_Notifications_Label_Experience_Counter}"
+                  HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top"
+                  Checked="CheckboxExperienceCounter_Checked"
+                  Unchecked="CheckboxExperienceCounter_Unchecked" />
+        <CheckBox x:Name="CheckboxBattlegrounds"
+                  Content="{lex:Loc Options_Tracker_Notifications_Label_Battlegrounds_Hero}"
+                  HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top"
+                  Checked="CheckboxBattlegrounds_Checked"
+                  Unchecked="CheckboxBattlegrounds_Unchecked" />
+        <CheckBox x:Name="CheckboxMulligan"
+                  Content="{lex:Loc Options_Tracker_Notifications_Label_Mulligan}"
+                  HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top"
+                  Checked="CheckboxMulligan_Checked"
+                  Unchecked="CheckboxMulligan_Unchecked" />
+        <CheckBox x:Name="CheckboxArenaRewardDialog"
+                  Visibility="{Binding Visibility, Source={x:Static options:AdvancedOptions.Instance}}"
+                  Foreground="{Binding Color, Source={x:Static options:AdvancedOptions.Instance}}"
+                  HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top"
+                  Checked="CheckboxArenaRewardDialog_Checked"
+                  Unchecked="CheckboxArenaRewardDialog_Unchecked">
+            <TextBlock Text="{lex:Loc Options_Tracker_Notifications_Label_ArenaReward}" TextWrapping="Wrap"/>
+        </CheckBox>
+        <CheckBox x:Name="CheckboxNoteDialog"
+                  Visibility="{Binding Visibility, Source={x:Static options:AdvancedOptions.Instance}}"
+                  Foreground="{Binding Color, Source={x:Static options:AdvancedOptions.Instance}}"
+                  Content="{lex:Loc Options_Tracker_Notifications_Label_NoteDialog}"
+                  HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top"
+                  Checked="CheckboxNoteDialog_Checked"
+                  Unchecked="CheckboxNoteDialog_Unchecked" />
+        <CheckBox x:Name="CheckboxNoteDialogDelayed"
+                  Visibility="{Binding Visibility, Source={x:Static options:AdvancedOptions.Instance}}"
+                  Foreground="{Binding Color, Source={x:Static options:AdvancedOptions.Instance}}"
+                  Content="{lex:Loc Options_Tracker_Notifications_Label_NoteDialog_WaitMenu}"
+                  HorizontalAlignment="Left" Margin="30,5,0,0" VerticalAlignment="Top"
+                  Checked="CheckboxNoteDialogDelay_Checked"
+                  Unchecked="CheckboxNoteDialogDelay_Unchecked" />
+    </StackPanel>
+</UserControl>

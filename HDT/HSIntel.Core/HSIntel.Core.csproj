@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <RootNamespace>HSIntel.Core</RootNamespace>
+    <AssemblyName>HSIntel.Core</AssemblyName>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <Platforms>x86</Platforms>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+</Project>
+

@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="HSIntel.Overlay.Controls.IntelOverlayHost"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:HSIntel.Overlay.Controls"
+             xmlns:layers="clr-namespace:HSIntel.Overlay.Layers"
+             Focusable="False"
+             IsTabStop="False">
+    <Grid x:Name="Root" Background="{x:Null}">
+        <Canvas x:Name="AdornerSurface"
+                IsHitTestVisible="False"
+                Background="{x:Null}">
+            <layers:OrdersAdornerLayer x:Name="OrdersLayer"
+                                       Panel.ZIndex="40"
+                                       Width="{Binding ElementName=AdornerSurface, Path=ActualWidth}"
+                                       Height="{Binding ElementName=AdornerSurface, Path=ActualHeight}"/>
+            <layers:ArrowAdornerLayer x:Name="ArrowLayer"
+                                      Panel.ZIndex="30"
+                                      Width="{Binding ElementName=AdornerSurface, Path=ActualWidth}"
+                                      Height="{Binding ElementName=AdornerSurface, Path=ActualHeight}"/>
+            <layers:HaloAdornerLayer x:Name="HaloLayer"
+                                     Panel.ZIndex="20"
+                                     Width="{Binding ElementName=AdornerSurface, Path=ActualWidth}"
+                                     Height="{Binding ElementName=AdornerSurface, Path=ActualHeight}"/>
+            <layers:DebugAdornerLayer x:Name="DebugLayer"
+                                      Panel.ZIndex="50"
+                                      Visibility="Collapsed"
+                                      Width="{Binding ElementName=AdornerSurface, Path=ActualWidth}"
+                                      Height="{Binding ElementName=AdornerSurface, Path=ActualHeight}"/>
+        </Canvas>
+
+        <Canvas x:Name="HudSurface"
+                Background="{x:Null}">
+            <controls:CoachHudShell x:Name="CoachHud"
+                                    Panel.ZIndex="100"
+                                    Width="260"
+                                    />
+        </Canvas>
+    </Grid>
+</UserControl>
+

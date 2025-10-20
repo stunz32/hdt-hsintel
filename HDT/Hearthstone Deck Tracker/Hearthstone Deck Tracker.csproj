@@ -1,0 +1,337 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Hearthstone_Deck_Tracker</RootNamespace>
+    <AssemblyName>HearthstoneDeckTracker</AssemblyName>
+    <AssemblyTitle>Hearthstone Deck Tracker</AssemblyTitle>
+    <TargetFramework>net472</TargetFramework>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Company>HearthSim</Company>
+    <Product>Hearthstone Deck Tracker</Product>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Description>Hearthstone Deck Tracker</Description>
+    <Copyright>Copyright © HearthSim 2024</Copyright>
+    <AssemblyVersion>1.47.11</AssemblyVersion>
+    <FileVersion>1.47.11</FileVersion>
+    <UseWPF>true</UseWPF>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Platforms>x86</Platforms>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <StartupObject>Hearthstone_Deck_Tracker.App</StartupObject>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <ApplicationIcon>Images\HearthstoneDeckTracker.ico</ApplicationIcon>
+    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Squirrel|x86'">
+    <DefineConstants>TRACE;SQUIRREL</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+
+  <Target Name="GenerateDesignerFiles">
+    <GenerateResource SdkToolsPath="$(TargetFrameworkSDKToolsDirectory)" Sources="Properties/Strings.resx" StronglyTypedLanguage="C#" StronglyTypedClassName="Strings" StronglyTypedNamespace="Hearthstone_Deck_Tracker.Properties" StronglyTypedFileName="Properties/Strings.Designer.cs" OutputResources="Hearthstone_Deck_Tracker.Properties.Strings.resources" PublicClass="true" />
+    <Delete Files="Hearthstone_Deck_Tracker.Properties.Strings.resources" />
+  </Target>
+
+  <Target Name="BeforeBuildMigrated" BeforeTargets="PreBuildEvent">
+    <CallTarget Targets="GenerateDesignerFiles" />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="ControlzEx" Version="3.0.2.4" />
+    <PackageReference Include="DeltaCompressionDotNet" Version="1.1.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
+    <PackageReference Include="LiveCharts" Version="0.9.7" />
+    <PackageReference Include="LiveCharts.Wpf" Version="0.9.7" />
+    <PackageReference Include="MahApps.Metro" Version="1.6.5" />
+    <PackageReference Include="Mono.Cecil" Version="0.9.6.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SharpCompress" Version="0.17.1" />
+    <PackageReference Include="SharpRaven" Version="2.4.0" />
+    <PackageReference Include="Splat" Version="1.6.2" />
+    <PackageReference Include="squirrel.windows" Version="1.9.1" />
+    <PackageReference Include="TaskScheduler" Version="2.12.1" />
+    <PackageReference Include="WPFLocalizeExtension" Version="3.5.0" />
+    <PackageReference Include="XAMLMarkupExtensions" Version="1.8.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Accessibility" />
+    <Reference Include="De.TorstenMandelkow.MetroChart, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\lib\De.TorstenMandelkow.MetroChart.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="HearthDb">
+      <HintPath>..\lib\HearthDb.dll</HintPath>
+    </Reference>
+    <Reference Include="HearthMirror">
+      <HintPath>..\lib\HearthMirror.dll</HintPath>
+    </Reference>
+    <Reference Include="HSReplay">
+      <HintPath>..\lib\HSReplay.dll</HintPath>
+    </Reference>
+    <Reference Include="BobsBuddy">
+      <HintPath>..\lib\BobsBuddy.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework" />
+    <Reference Include="ReachFramework" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Printing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <ProjectReference Include="..\HearthWatcher\HearthWatcher.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Windows\MainWindow.*.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\OverlayWindow.*.cs">
+      <DependentUpon>OverlayWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\HeroPowerViewModel.cs">
+      <DependentUpon>HeroPower.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\BattlegroundsMinionViewModel.cs">
+      <DependentUpon>BattlegroundsMinion.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\HeroPowerViewModel.cs">
+      <DependentUpon>HeroPower.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\BattlegroundsMinionViewModel.cs">
+      <DependentUpon>BattlegroundsMinion.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\**\*.*" />
+    <Resource Include="Images\*.*" />
+    <Content Include="Images\*.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="Resources\CHANGELOG.md" />
+    <EmbeddedResource Update="Properties\Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Strings.*.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Themes Include="$(MSBuildProjectDirectory)/Images/Themes/**/*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Images\card-icon-drawn.png" />
+    <None Remove="Images\card-icon-forged.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Controls\Overlay\Battlegrounds\HeroPicking\BattlegroundsSingleHeroStats.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\HeroPicking\BattlegroundsHeroPicking.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\Overlay\Constructed\Mulligan\ConstructedMulliganSingleCardStats.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\Overlay\Constructed\Mulligan\ConstructedMulliganGuide.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="Controls\Overlay\Constructed\ActiveEffects\ActiveEffectsOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+	<Page Update="Controls\Overlay\Constructed\PlayerResourcesWidget\PlayerResourcesWidget.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <XamlRuntime>Wpf</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+    <Page Update="Controls\Overlay\CountersOverlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\GridCardImages.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\HeroPower.xaml">
+		<Generator>MSBuild:Compile</Generator>
+		<XamlRuntime>Wpf</XamlRuntime>
+		<SubType>Designer</SubType>
+	</Page>
+    <Page Update="Controls\Trinket.xaml">
+		<Generator>MSBuild:Compile</Generator>
+		<XamlRuntime>Wpf</XamlRuntime>
+		<SubType>Designer</SubType>
+	</Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Guides\Comps\CompGuideList.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\HeroPower.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Trinket.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Guides\HeroesGuides.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Guides\MinionsGuides.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Guides\Heroes\HeroGuideTooltip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Guides\Heroes\HeroGuide.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Minions\BattlegroundsMinionsExtraFilters.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Minions\BattlegroundsMinionTypeButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Minions\BattlegroundsMinionType.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+	<Page Update="Controls\Overlay\Arena\ArenaPickHelper.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <XamlRuntime>Wpf</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+	<Page Update="Controls\Overlay\Arena\Tier7PreLobby.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <XamlRuntime>Wpf</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+	<Page Update="Controls\Overlay\Arena\ArenasmithLogo.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <XamlRuntime>Wpf</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+	<Page Update="Controls\Overlay\Arena\ArenaResources.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <XamlRuntime>Wpf</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+	<Page Update="FlyoutControls\Options\Overlay\OverlayArena.xaml">
+	  <Generator>MSBuild:Compile</Generator>
+	  <XamlRuntime>Wpf</XamlRuntime>
+	  <SubType>Designer</SubType>
+	</Page>
+    <Page Update="Controls\Overlay\Battlegrounds\ChinaModule\ChinaModulePanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Guides\Trinkets\TrinketGuideTooltip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Controls\Overlay\Battlegrounds\Guides\Quests\QuestGuideTooltip.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+  <Target Name="CopyImages" BeforeTargets="PreBuildEvent">
+    <Copy SourceFiles="@(Themes)" DestinationFolder="$(OutputPath)/Images/Themes/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyVCRuntimeLibs" BeforeTargets="PreBuildEvent">
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/api-ms-win-crt-convert-l1-1-0.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/api-ms-win-crt-heap-l1-1-0.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/api-ms-win-crt-runtime-l1-1-0.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/api-ms-win-crt-stdio-l1-1-0.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/api-ms-win-crt-string-l1-1-0.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/msvcp140.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/ucrtbase.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)/../lib/vcruntime140.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+  </Target>
+  <ItemGroup>
+    <ProjectReference Include="..\HSIntel.Core\HSIntel.Core.csproj" />
+    <ProjectReference Include="..\HSIntel.Engine\HSIntel.Engine.csproj" />
+    <ProjectReference Include="..\HSIntel.Overlay\HSIntel.Overlay.csproj" />
+  </ItemGroup>
+</Project>

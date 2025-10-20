@@ -1,0 +1,30 @@
+<UserControl x:Class="Hearthstone_Deck_Tracker.Controls.Overlay.Battlegrounds.Minions.BattlegroundsTierButton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Hearthstone_Deck_Tracker.Controls.Overlay.Battlegrounds.Minions"
+             xmlns:bgs="clr-namespace:Hearthstone_Deck_Tracker.Controls.Overlay.Battlegrounds"
+             mc:Ignorable="d"
+             Cursor="Hand"
+             MouseEnter="UserControl_MouseEnter"
+             MouseLeave="UserControl_MouseLeave"
+             MouseUp="UserControl_MouseUp">
+    <Grid>
+        <Image Visibility="{Binding GlowVisibility, RelativeSource={RelativeSource AncestorType=local:BattlegroundsTierButton}}"
+               Opacity="{Binding GlowOpacity, RelativeSource={RelativeSource AncestorType=local:BattlegroundsTierButton}}"
+               d:Visibility="Visible"
+               Source="/HearthstoneDeckTracker;component/Resources/tier-glow.png" />
+        <Grid RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+                <ScaleTransform ScaleX="0.905" ScaleY="0.905"/>
+            </Grid.RenderTransform>
+            <bgs:BattlegroundsTier d:Tier="6" Cursor="Hand"
+                Width="{Binding Width, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Height="{Binding Height, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Tier="{Binding Tier, RelativeSource={RelativeSource AncestorType=local:BattlegroundsTierButton}}"
+                Opacity="{Binding IconOpacity, RelativeSource={RelativeSource AncestorType=local:BattlegroundsTierButton}}" />
+            <Image Name="ImageTierRemove" Visibility="Collapsed" Source="/HearthstoneDeckTracker;component/Resources/tier-x.png" RenderOptions.BitmapScalingMode="Fant" />
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="HSIntel.Overlay.Controls.CoachHudShell"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="True"
+             MinWidth="220"
+             MinHeight="120">
+    <Border CornerRadius="8"
+            Background="#CC1C1C1F"
+            BorderBrush="#33FFFFFF"
+            BorderThickness="1"
+            Padding="10"
+            SnapsToDevicePixels="True">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border x:Name="HeaderRegion"
+                    Grid.Row="0"
+                    Background="#22101010"
+                    CornerRadius="4"
+                    Padding="6"
+                    Cursor="SizeAll">
+                <DockPanel LastChildFill="False">
+                    <TextBlock Text="HS Intel Coach"
+                               FontWeight="SemiBold"
+                               Foreground="#F0FFFFFF"
+                               VerticalAlignment="Center"/>
+                    <ToggleButton x:Name="ToggleState"
+                                  Width="52"
+                                  Height="22"
+                                  Margin="10,0,0,0"
+                                  VerticalAlignment="Center"
+                                  IsHitTestVisible="False"
+                                  Focusable="False"
+                                  IsChecked="{Binding IsCoachEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                  Content="On"
+                                  ToolTip="Enable or disable coaching (stub)"/>
+                </DockPanel>
+            </Border>
+
+            <StackPanel Grid.Row="1"
+                        Orientation="Horizontal"
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Left">
+                <TextBlock Text="Status:"
+                           Foreground="#AAFFFFFF"
+                           Margin="0,0,6,0"/>
+                <TextBlock x:Name="StatusText"
+                           Text="Initializing"
+                           Foreground="#FFFFFFFF"
+                           FontWeight="Bold"/>
+            </StackPanel>
+
+            <Border Grid.Row="2"
+                    Margin="0,12,0,0"
+                    Background="#22000000"
+                    CornerRadius="4"
+                    Padding="8">
+                <StackPanel>
+                    <TextBlock Text="Next Action"
+                               Foreground="#AAFFFFFF"
+                               FontWeight="SemiBold"/>
+                    <TextBlock x:Name="ActionPlaceholder"
+                               Text="Waiting for engine..."
+                               Foreground="#DDFFFFFF"
+                               Margin="0,6,0,0"
+                               TextWrapping="Wrap"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button x:Name="ExplainButton"
+                                Content="Explain"
+                                HorizontalAlignment="Left"
+                                Padding="10,4"
+                                Click="OnExplainClicked"/>
+                        <Button x:Name="SettingsButton"
+                                FontFamily="Segoe MDL2 Assets" Content="&#xE713;"
+                                HorizontalAlignment="Left"
+                                Margin="8,0,0,0"
+                                Padding="10,4"
+                                ToolTip="Open HS Intel settings (stub)"
+                                Click="OnSettingsClicked"/>
+                    </StackPanel>
+
+                    <Border x:Name="ExplainPanel"
+                            Visibility="Collapsed"
+                            Margin="0,10,0,0"
+                            Background="#22000000"
+                            BorderBrush="#33FFFFFF"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="6">
+                        <StackPanel>
+                            <TextBlock x:Name="ExplainHeader"
+                                       Text="Explanations"
+                                       Foreground="#F0FFFFFF"
+                                       FontWeight="SemiBold"/>
+                            <ItemsControl x:Name="ExplainList" Margin="0,6,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="0,6,0,6">
+                                            <TextBlock Text="{Binding Step, StringFormat=Step {0}}"
+                                                       Foreground="#AAFFFFFF"/>
+                                            <TextBlock Text="{Binding Medium}"
+                                                       Foreground="#FFFFFFFF"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Full}"
+                                                       Foreground="#CCFFFFFF"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="{Binding Confidence, StringFormat=Conf {0:P0}}"
+                                                       Foreground="#99FFFFFF"
+                                                       FontSize="11"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>
+

@@ -1,0 +1,41 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:hearthstoneDeckTracker="clr-namespace:Hearthstone_Deck_Tracker"
+             xmlns:ext="clr-namespace:Hearthstone_Deck_Tracker.Utility.Extensions"
+             xmlns:tooltips="clr-namespace:Hearthstone_Deck_Tracker.Controls.Tooltips"
+             x:Class="Hearthstone_Deck_Tracker.Controls.CardMarker"
+             mc:Ignorable="d"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             RenderTransform="{Binding ScaleTransform}"
+             RenderTransformOrigin="0.5,0.5"
+             ToolTipService.VerticalOffset="20"
+             ToolTipService.Placement="Bottom"
+             ToolTipService.IsEnabled="{Binding Bindable.OverlayCardMarkTooltips, Source={StaticResource ConfigWrapper}}"
+             ext:OverlayExtensions.ToolTip="{x:Type tooltips:CardTooltip}"
+             ext:OverlayExtensions.IsOverlayHoverVisible="True">
+    <StackPanel>
+        <Grid Width="36" Height="36" Visibility="{Binding CardAgeVisibility}">
+            <Image Width="32" Height="32" Source="/HearthstoneDeckTracker;component/Images/card-marker.png" />
+            <hearthstoneDeckTracker:HearthstoneTextBlock
+                FontSize="18" Width="32" Height="32" TextAlignment="Center"
+                Text="{Binding CardAge}" d:Text="1"
+            />
+            <Image
+                Width="16" Height="16" Margin="18,18,-2,-2"
+                Source="{Binding Icon}" d:Source="/HearthstoneDeckTracker;component/Images/card-icon-created.png"
+                Visibility="{Binding IconVisibility}" d:Visibility="Visible"
+            />
+            <hearthstoneDeckTracker:HearthstoneTextBlock Fill="DodgerBlue" FontSize="13" Width="16" Height="16" TextAlignment="Center" VerticalAlignment="Top" HorizontalAlignment="Right"
+                                                         Text="{Binding CostReduction}" d:Text="-1" Visibility="{Binding CostReductionVisibility}"/>
+        </Grid>
+        <Border Margin="4,-2,4,0" BorderThickness="2" CornerRadius="3" BorderBrush="#141617" Visibility="{Binding SourceCardVisibility}" d:Visibility="Visible" Width="24" Height="24">
+            <Grid>
+                <Image Source="{Binding SourceCardBitmap}" d:Source="/HearthstoneDeckTracker;component/Resources/faceless_manipulator.png" Width="20" Height="20" />
+                <Image Width="16" Height="16" Margin="-8" HorizontalAlignment="Left" VerticalAlignment="Top" Source="{Binding Icon}" d:Source="/HearthstoneDeckTracker;component/Images/card-icon-created.png" />
+            </Grid>
+        </Border>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,19 @@
+<Window x:Class="Hearthstone_Deck_Tracker.Utility.Toasts.ToastWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" ShowInTaskbar="False"
+        WindowStyle="None" ResizeMode="NoResize" AllowsTransparency="True" Topmost="True"
+        SizeToContent="WidthAndHeight" SourceInitialized="Window_SourceInitialized" 
+        MouseEnter="Window_MouseEnter" MouseLeave="Window_MouseLeave"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp"
+        Width="10" Height="10"
+        Title="ToastWindow">
+    <Window.Resources>
+        <Storyboard x:Key="StoryboardFadeOut">
+            <DoubleAnimation Duration="0:0:0.4" From="1" To="0" Storyboard.TargetProperty="Opacity"/>
+        </Storyboard>
+    </Window.Resources>
+    <ContentControl Name="ContentControl"/>
+</Window>
